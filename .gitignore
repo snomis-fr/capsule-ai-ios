@@ -17,7 +17,7 @@ Package.resolved
 Pods/
 
 # Secrets — NEVER commit these
-GoogleService-Info.plist
+# GoogleService-Info.plist : retiré du gitignore car requis pour Google Sign-In (ne contient que CLIENT_ID public)
 *.secret
 .env
 .env.local

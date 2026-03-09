@@ -1,0 +1,40 @@
+name: CapsuleAI
+options:
+  bundleIdPrefix: com.ippon
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "15.0"
+  # Exécuter "pod install" après "xcodegen generate" pour Google Sign-In
+  # postGenCommand: pod install
+packages:
+  Supabase:
+    url: https://github.com/supabase/supabase-swift
+    from: "2.0.0"
+  SDWebImageSwiftUI:
+    url: https://github.com/SDWebImage/SDWebImageSwiftUI
+    from: "3.0.0"
+targets:
+  CapsuleAI:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: CapsuleAI
+        type: group
+        excludes:
+          - "**/.DS_Store"
+    resources:
+      - path: CapsuleAI/Config/GoogleService-Info.plist
+      - path: CapsuleAI/Resources
+        type: folder
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: CapsuleAI/Config/Info.plist
+        PRODUCT_BUNDLE_IDENTIFIER: com.ippon.capsule
+        ENABLE_USER_SCRIPT_SANDBOXING: "NO"  # Requis pour CocoaPods Embed Pods Frameworks
+    dependencies:
+      - package: Supabase
+        product: Supabase
+      - package: SDWebImageSwiftUI
+        product: SDWebImageSwiftUI

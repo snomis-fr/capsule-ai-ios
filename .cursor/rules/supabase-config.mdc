@@ -1,0 +1,26 @@
+---
+description: Auto-configuration Supabase (redirect URLs, auth)
+alwaysApply: true
+---
+
+# Configuration automatique Supabase
+
+## À chaque session (quand tu touches Auth ou Supabase)
+
+Exécute ces commandes pour synchroniser la config Supabase (redirect URLs OAuth, etc.) :
+
+```bash
+cd /Users/stephanenomis/Documents/GitHub/capsule-ai-ios
+supabase config push --yes
+```
+
+## Contexte
+
+- **config.toml** : `supabase/config.toml` contient `auth.additional_redirect_urls = ["https://127.0.0.1:3000", "capsuleai://**"]` pour OAuth Google (flux navigateur).
+- **Lien projet** : le projet est lié via `supabase link --project-ref wuezwpyfxeqhbzwcmhsj`.
+- Si tu modifies `config.toml` (redirect URLs, providers, etc.), exécute `supabase config push --yes` immédiatement après.
+
+## Prérequis
+
+- Supabase CLI installé (`supabase --version`)
+- Session CLI authentifiée (`supabase login`)

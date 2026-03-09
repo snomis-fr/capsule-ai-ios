@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <style>
+    body { margin: 0; padding: 0; background: #f2f2f7; color: #1d1d1f; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+    #toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 12px;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      margin: 8px;
+    }
+    .tb-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 36px;
+      height: 36px;
+      padding: 0 8px;
+      border: none;
+      background: #f1f3f4;
+      color: #3c4043;
+      font-size: 18px;
+      font-weight: 500;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .tb-btn:hover { background: #e8eaed; }
+    .tb-btn.active { background: #dadce0; }
+    .tb-btn svg { width: 18px; height: 18px; fill: #3c4043; }
+    .tb-sep {
+      width: 1px;
+      height: 24px;
+      background: #dadce0;
+      margin: 0 4px;
+    }
+    .tb-dropdown { position: relative; }
+    .tb-dropdown-content {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      margin-top: 4px;
+      min-width: 160px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 100;
+      overflow: hidden;
+    }
+    .tb-dropdown.open .tb-dropdown-content { display: block; }
+    .tb-dropdown-item {
+      display: block;
+      width: 100%;
+      padding: 10px 14px;
+      border: none;
+      background: none;
+      text-align: left;
+      font-size: 14px;
+      color: #1d1d1f;
+      cursor: pointer;
+    }
+    .tb-dropdown-item:hover { background: #f1f3f4; }
+    #editor { background: #ffffff; min-height: 300px; color: #1d1d1f; }
+    .ProseMirror {
+      color: #1d1d1f !important;
+      background: #ffffff !important;
+      min-height: 300px;
+      padding: 12px;
+      outline: none;
+    }
+    .ProseMirror p, .ProseMirror li { color: #1d1d1f !important; }
+    .ProseMirror h1, .ProseMirror h2, .ProseMirror h3 { color: #1d1d1f !important; margin: 0.75em 0 0.25em; }
+    .ProseMirror mark { padding: 0 2px; border-radius: 2px; }
+    .ProseMirror a { color: #3B82F6; text-decoration: underline; }
+    .ProseMirror code { background: #f1f5f9; padding: 1px 4px; border-radius: 4px; font-size: 0.9em; }
+    .ProseMirror pre { background: #f1f5f9; padding: 12px; border-radius: 4px; overflow-x: auto; }
+    .ProseMirror pre code { background: none; padding: 0; }
+    .ProseMirror ul, .ProseMirror ol { padding-left: 1.5em; }
+    .ProseMirror table { border-collapse: collapse; width: 100%; }
+    .ProseMirror td, .ProseMirror th { border: 1px solid #e2e8f0; padding: 8px; }
+    .ProseMirror .task-item { display: flex; align-items: flex-start; gap: 8px; }
+    .ProseMirror .task-item input { margin-top: 4px; }
+    .ProseMirror .task-item[data-checked="true"] { text-decoration: line-through; color: #94a3b8; }
+    .ProseMirror blockquote { border-left: 4px solid #e2e8f0; padding-left: 16px; margin-left: 0; color: #64748b; }
+    .ProseMirror hr { border: none; border-top: 2px solid #e2e8f0; margin: 16px 0; }
+    .ProseMirror .youtube-wrapper { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; }
+    .ProseMirror .youtube-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+    .ProseMirror img { max-width: 100%; height: auto; display: block; border-radius: 8px; }
+  </style>
+</head>
+<body>
+<div id="toolbar">
+  <div class="tb-dropdown" id="dd-improve">
+    <button class="tb-btn" type="button">✨ Improve ▾</button>
+    <div class="tb-dropdown-content">
+      <button class="tb-dropdown-item" data-action="ai-summarize">Résumer</button>
+      <button class="tb-dropdown-item" data-action="ai-structure">Structurer</button>
+      <button class="tb-dropdown-item" data-action="ai-generate">Générer</button>
+    </div>
+  </div>
+  <div class="tb-dropdown" id="dd-heading">
+    <button class="tb-btn" type="button">H ▾</button>
+    <div class="tb-dropdown-content">
+      <button class="tb-dropdown-item" data-heading="1">Titre 1</button>
+      <button class="tb-dropdown-item" data-heading="2">Titre 2</button>
+      <button class="tb-dropdown-item" data-heading="3">Titre 3</button>
+    </div>
+  </div>
+  <div class="tb-dropdown" id="dd-list">
+    <button class="tb-btn" type="button">Liste ▾</button>
+    <div class="tb-dropdown-content">
+      <button class="tb-dropdown-item" data-list="bullet">Puces</button>
+      <button class="tb-dropdown-item" data-list="ordered">Numérotée</button>
+      <button class="tb-dropdown-item" data-list="task">Checklist</button>
+    </div>
+  </div>
+  <button class="tb-btn" id="btn-quote" type="button" title="Citation">"</button>
+  <button class="tb-btn" id="btn-table" type="button" title="Tableau">⊞</button>
+  <span class="tb-sep"></span>
+  <button class="tb-btn" id="btn-bold" type="button">B</button>
+  <button class="tb-btn" id="btn-highlight" type="button" title="Surligneur">🖌</button>
+  <button class="tb-btn" id="btn-link" type="button" title="Lien">🔗</button>
+  <span class="tb-sep"></span>
+  <div class="tb-dropdown" id="dd-image">
+    <button class="tb-btn" type="button" title="Image">🖼</button>
+    <div class="tb-dropdown-content">
+      <button class="tb-dropdown-item" id="img-gallery">Galerie</button>
+      <button class="tb-dropdown-item" id="img-url">Coller URL</button>
+    </div>
+  </div>
+  <button class="tb-btn" id="btn-youtube" type="button" title="YouTube">▶</button>
+  <span class="tb-sep"></span>
+  <div class="tb-dropdown" id="dd-more">
+    <button class="tb-btn" type="button">⋮</button>
+    <div class="tb-dropdown-content">
+      <button class="tb-dropdown-item" data-more="italic">Italique</button>
+      <button class="tb-dropdown-item" data-more="strike">Barré</button>
+      <button class="tb-dropdown-item" data-more="code">Code inline</button>
+      <hr style="margin:4px 0;border:none;border-top:1px solid #e2e8f0">
+      <button class="tb-dropdown-item" data-more="codeblock">Bloc de code</button>
+      <button class="tb-dropdown-item" data-more="hr">Ligne horizontale</button>
+    </div>
+  </div>
+</div>
+<div id="editor"></div>
+<script type="module">
+  import { Editor } from 'https://cdn.skypack.dev/@tiptap/core@2.10.0'
+  import StarterKit from 'https://cdn.skypack.dev/@tiptap/starter-kit@2.10.0'
+  import Image from 'https://cdn.skypack.dev/@tiptap/extension-image@2.10.0'
+  import Highlight from 'https://cdn.skypack.dev/@tiptap/extension-highlight@2.10.0'
+  import Link from 'https://cdn.skypack.dev/@tiptap/extension-link@2.10.0'
+  import TextStyle from 'https://cdn.skypack.dev/@tiptap/extension-text-style@2.10.0'
+  import Color from 'https://cdn.skypack.dev/@tiptap/extension-color@2.10.0'
+  import TaskList from 'https://cdn.skypack.dev/@tiptap/extension-task-list@2.10.0'
+  import TaskItem from 'https://cdn.skypack.dev/@tiptap/extension-task-item@2.10.0'
+  import Table from 'https://cdn.skypack.dev/@tiptap/extension-table@2.10.0'
+  import TableRow from 'https://cdn.skypack.dev/@tiptap/extension-table-row@2.10.0'
+  import TableCell from 'https://cdn.skypack.dev/@tiptap/extension-table-cell@2.10.0'
+  import TableHeader from 'https://cdn.skypack.dev/@tiptap/extension-table-header@2.10.0'
+  import YouTube from 'https://cdn.skypack.dev/@tiptap/extension-youtube@2.10.0'
+
+  const editor = new Editor({
+    element: document.querySelector('#editor'),
+    extensions: [
+      StarterKit,
+      Image,
+      Link.configure({ openOnClick: false }),
+      TextStyle,
+      Color,
+      Highlight.configure({ multicolor: true }),
+      TaskList,
+      TaskItem.configure({ nested: true }),
+      Table.configure({ resizable: true }),
+      TableRow,
+      TableHeader,
+      TableCell,
+      YouTube.configure({
+        inline: false,
+        HTMLAttributes: { referrerpolicy: 'strict-origin-when-cross-origin' }
+      })
+    ],
+    content: '',
+    editorProps: {
+      attributes: { class: 'ProseMirror', style: 'min-height: 300px; padding: 12px;' },
+      handleDOMEvents: {
+        input: () => sendContent(),
+        blur: () => sendContent()
+      }
+    }
+  })
+
+  function bridge(obj) {
+    if (window.webkit?.messageHandlers?.tiptapBridge) {
+      window.webkit.messageHandlers.tiptapBridge.postMessage(JSON.stringify(obj))
+    }
+  }
+
+  function sendContent() {
+    try {
+      bridge({ type: 'content', json: editor.getJSON(), text: editor.getText() })
+    } catch (_) {}
+  }
+
+  function updateActiveStates() {
+    document.getElementById('btn-bold').classList.toggle('active', editor.isActive('bold'))
+    document.getElementById('btn-highlight').classList.toggle('active', editor.isActive('highlight'))
+    document.getElementById('btn-link').classList.toggle('active', editor.isActive('link'))
+    document.getElementById('btn-quote').classList.toggle('active', editor.isActive('blockquote'))
+  }
+
+  editor.on('selectionUpdate', updateActiveStates)
+  editor.on('transaction', updateActiveStates)
+
+  document.querySelectorAll('.tb-dropdown').forEach(dd => {
+    const btn = dd.querySelector('.tb-btn')
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation()
+      document.querySelectorAll('.tb-dropdown.open').forEach(o => { if (o !== dd) o.classList.remove('open') })
+      dd.classList.toggle('open')
+    })
+  })
+  document.addEventListener('click', () => document.querySelectorAll('.tb-dropdown.open').forEach(dd => dd.classList.remove('open')))
+
+  document.querySelectorAll('[data-action^="ai-"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      bridge({ type: 'ai_action', action: btn.dataset.action.replace('ai-', '') })
+      document.getElementById('dd-improve').classList.remove('open')
+    })
+  })
+
+  document.querySelectorAll('[data-heading]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      editor.chain().focus().toggleHeading({ level: parseInt(btn.dataset.heading, 10) }).run()
+      document.getElementById('dd-heading').classList.remove('open')
+    })
+  })
+
+  document.querySelectorAll('[data-list]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const t = btn.dataset.list
+      if (t === 'bullet') editor.chain().focus().toggleBulletList().run()
+      else if (t === 'ordered') editor.chain().focus().toggleOrderedList().run()
+      else if (t === 'task') editor.chain().focus().toggleTaskList().run()
+      document.getElementById('dd-list').classList.remove('open')
+    })
+  })
+
+  document.getElementById('btn-quote').addEventListener('click', () => editor.chain().focus().toggleBlockquote().run())
+  document.getElementById('btn-table').addEventListener('click', () => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run())
+  document.getElementById('btn-bold').addEventListener('click', () => editor.chain().focus().toggleBold().run())
+  document.getElementById('btn-highlight').addEventListener('click', () => editor.chain().focus().toggleHighlight({ color: '#fef08a' }).run())
+  document.getElementById('btn-link').addEventListener('click', () => {
+    const href = editor.getAttributes('link').href || ''
+    const url = prompt('URL du lien:', href) || ''
+    if (url) editor.chain().focus().setLink({ href: url.startsWith('http') ? url : 'https://' + url }).run()
+    else editor.chain().focus().unsetLink().run()
+  })
+
+  document.getElementById('img-gallery').addEventListener('click', () => {
+    bridge({ type: 'request_image_gallery' })
+    document.getElementById('dd-image').classList.remove('open')
+  })
+  document.getElementById('img-url').addEventListener('click', () => {
+    bridge({ type: 'request_image_url' })
+    document.getElementById('dd-image').classList.remove('open')
+  })
+
+  document.getElementById('btn-youtube').addEventListener('click', () => {
+    bridge({ type: 'request_youtube_url' })
+  })
+
+  window.setImageUrlFromBridge = (url) => {
+    try { if (url && url.trim()) editor.chain().focus().setImage({ src: url.trim() }).run() } catch(_){}
+  }
+  window.setYoutubeFromBridge = (url) => {
+    try {
+      if (url && url.trim()) {
+        let src = url.trim()
+        if (!src.startsWith('http')) src = 'https://' + src
+        editor.chain().focus().setYoutubeVideo({ src }).run()
+      }
+    } catch(_){}
+  }
+
+  document.querySelectorAll('[data-more]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const m = btn.dataset.more
+      if (m === 'italic') editor.chain().focus().toggleItalic().run()
+      else if (m === 'strike') editor.chain().focus().toggleStrike().run()
+      else if (m === 'code') editor.chain().focus().toggleCode().run()
+      else if (m === 'codeblock') editor.chain().focus().toggleCodeBlock().run()
+      else if (m === 'hr') editor.chain().focus().setHorizontalRule().run()
+      document.getElementById('dd-more').classList.remove('open')
+    })
+  })
+
+  window.getTiptapContent = () => ({ json: editor.getJSON(), text: editor.getText() })
+  window.setTiptapContent = (json) => { if (json) editor.commands.setContent(json) }
+  window.tiptapUndo = () => editor.chain().focus().undo().run()
+  window.tiptapRedo = () => editor.chain().focus().redo().run()
+  window.tiptapBold = () => editor.chain().focus().toggleBold().run()
+  window.tiptapItalic = () => editor.chain().focus().toggleItalic().run()
+  window.tiptapStrike = () => editor.chain().focus().toggleStrike().run()
+  window.tiptapCode = () => editor.chain().focus().toggleCode().run()
+  window.tiptapHeading = (lvl) => editor.chain().focus().toggleHeading({ level: parseInt(lvl, 10) }).run()
+  window.tiptapBulletList = () => editor.chain().focus().toggleBulletList().run()
+  window.tiptapOrderedList = () => editor.chain().focus().toggleOrderedList().run()
+  window.tiptapTaskList = () => editor.chain().focus().toggleTaskList().run()
+  window.tiptapHorizontalRule = () => editor.chain().focus().setHorizontalRule().run()
+  window.tiptapImage = (src) => { try { if (src) editor.chain().focus().setImage({ src }).run() } catch(_){} }
+  window.tiptapHighlight = (color) => {
+    if (color && color.trim() !== '') editor.chain().focus().toggleHighlight({ color }).run()
+    else editor.chain().focus().unsetHighlight().run()
+  }
+  window.tiptapBlockquote = () => editor.chain().focus().toggleBlockquote().run()
+  window.tiptapSetLink = (href) => {
+    if (href && href.trim() !== '') {
+      const url = href.startsWith('http') ? href : 'https://' + href
+      editor.chain().focus().setLink({ href: url }).run()
+    }
+  }
+  window.tiptapUnsetLink = () => editor.chain().focus().unsetLink().run()
+  window.tiptapSetColor = (hex) => { if (hex) editor.chain().focus().setColor(hex).run() }
+  window.tiptapUnsetColor = () => editor.chain().focus().unsetColor().run()
+  window.tiptapClearContent = () => editor.commands.clearContent()
+  window.insertHTML = (html) => {
+    try { if (html && typeof html === 'string') editor.chain().focus().insertContent(html).run() } catch (_) {}
+  }
+  window.decodeBase64Utf8 = (b64) => {
+    const binary = atob(b64)
+    const bytes = new Uint8Array(binary.length)
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
+    return new TextDecoder('utf-8').decode(bytes)
+  }
+  window.insertHTMLFromBase64 = (b64) => {
+    try {
+      if (b64 && typeof b64 === 'string') {
+        editor.chain().focus().insertContent(window.decodeBase64Utf8(b64)).run()
+      }
+    } catch (_) {}
+  }
+  window.setContentHTML = (html) => {
+    try { if (html && typeof html === 'string') editor.commands.setContent(html) } catch (_) {}
+  }
+  window.setContentHTMLFromBase64 = (b64) => {
+    try {
+      if (b64 && typeof b64 === 'string') editor.commands.setContent(window.decodeBase64Utf8(b64))
+    } catch (_) {}
+  }
+
+  bridge({ type: 'ready' })
+</script>
+</body>
+</html>

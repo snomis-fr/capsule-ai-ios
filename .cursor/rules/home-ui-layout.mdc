@@ -1,0 +1,23 @@
+---
+description: Layout de l'écran Home (Notes) — préférence persistante
+globs: CapsuleAI/Features/Home/**/*
+---
+
+# Layout écran Home (Notes)
+
+## Règle à NE PAS modifier sans demande explicite
+
+Layout aligné sur la page Espaces :
+
+1. **Barre de navigation** — nom app à gauche, photo à droite
+   - Texte : "Capsule AI" (ToolbarItem topBarLeading)
+   - Avatar profil (topBarTrailing)
+
+2. **Header (safeAreaInset)** — date + recherche
+   - Date : Format "dimanche 1 mars 2026" (EEEE d MMMM yyyy, locale fr_FR)
+   - Recherche : placeholder "Rechercher dans toutes les notes...", icône loupe
+
+## Fichier concerné
+
+`CapsuleAI/Features/Home/HomeView.swift` — `homeHeader` et toolbar
+

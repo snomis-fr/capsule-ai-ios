@@ -1,0 +1,21 @@
+# Vérification avant livraison
+
+## Règle obligatoire
+
+**Avant de dire au user "c'est corrigé" ou "testez"**, exécuter :
+
+```bash
+cd /Users/stephanenomis/Documents/GitHub/capsule-ai-ios
+./scripts/verify-and-run.sh
+```
+
+- Si le build échoue → corriger les erreurs avant de répondre
+- Si le build réussit → l'app se lance dans le simulateur ; indiquer au user de vérifier
+- Ne jamais demander au user de retester sans avoir lancé ce script soi-même
+
+## Workflow
+
+1. Faire les modifications
+2. Lancer `./scripts/verify-and-run.sh`
+3. Si échec → corriger et relancer
+4. Si succès → informer le user que le build et le lancement ont réussi, et qu'il peut tester

@@ -1,0 +1,13 @@
+---
+description: Règle immuable pour l'ordre des espaces
+globs: 
+alwaysApply: true
+---
+
+# Espaces — « Non classé » toujours en dernier
+
+**Règle dans le marbre** : l'espace « Non classées » (`isDefault: true`) doit **TOUJOURS** apparaître en dernier dans toute liste d'espaces affichée à l'utilisateur.
+
+- Utiliser `spaces.sortedWithDefaultLast()` (extension dans `Space+Ordering.swift`)
+- Ne jamais trier manuellement avec une autre logique pour les espaces
+- S'applique à : sélecteur de création de note, profil, recherche, restauration, collaborateurs, etc.

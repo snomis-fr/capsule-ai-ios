@@ -116,7 +116,11 @@
 - [ ] Déployer `ai-assist`
 - [ ] Déployer `coach-ia`
 - [ ] Déployer `fetch-unsplash-image`
-- [ ] Configurer les secrets (API keys)
+- [ ] Configurer les secrets (API keys) :
+  ```bash
+  # Depuis la racine du projet, avec ta clé Anthropic (console.anthropic.com) :
+  supabase secrets set ANTHROPIC_API_KEY=sk-ant-api03-xxxxxxxxxxxx
+  ```
 
 ### Database Webhooks
 - [ ] Webhook sur INSERT/UPDATE notes → `generate-summary`

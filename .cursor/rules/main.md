@@ -4,13 +4,15 @@ You are building **Capsule AI**, a native iOS app in SwiftUI targeting iOS 17+.
 Collaborative note-taking app with AI features for executives and their teams (max 7 collaborators).
 
 ## Read These Files BEFORE Writing Any Code
-1. `.cursor/rules/architecture.md` — App architecture, patterns, folder structure
-2. `.cursor/rules/swiftui-guidelines.md` — SwiftUI coding standards
-3. `.cursor/rules/naming-conventions.md` — Naming rules for files, variables, functions
-4. `.cursor/rules/supabase-patterns.md` — Backend patterns, queries, auth, realtime
-5. `.cursor/rules/code-quality.md` — Quality checklist before every commit
-6. `docs/SPEC-FUNCTIONAL.md` — WHAT to build (screens, features, business rules)
-7. `docs/SPEC-TECHNICAL.md` — HOW to build it (stack, DB schema, APIs, Edge Functions)
+1. `.cursor/rules/home-ui-layout.mdc` — **Layout Home : date L1 en haut à gauche, titre L2 en dessous à gauche, recherche (gain de place, ne pas modifier)**
+2. `.cursor/rules/architecture.md` — App architecture, patterns, folder structure
+3. `.cursor/rules/swiftui-guidelines.md` — SwiftUI coding standards
+4. `.cursor/rules/naming-conventions.md` — Naming rules for files, variables, functions
+5. `.cursor/rules/supabase-patterns.md` — Backend patterns, queries, auth, realtime
+6. `.cursor/rules/supabase-config.mdc` — **Exécuter `supabase config push --yes`** en début de session (redirect URLs OAuth)
+7. `.cursor/rules/code-quality.md` — Quality checklist before every commit
+8. `docs/SPEC-FUNCTIONAL.md` — WHAT to build (screens, features, business rules)
+9. `docs/SPEC-TECHNICAL.md` — HOW to build it (stack, DB schema, APIs, Edge Functions)
 
 ## Golden Rules
 - **SwiftUI only** — no UIKit unless strictly necessary (WKWebView for Tiptap is the only exception)
@@ -32,5 +34,6 @@ Collaborative note-taking app with AI features for executives and their teams (m
 1. Reproduce the issue mentally by reading the code
 2. Identify the root cause (not just the symptom)
 3. Fix with minimal changes
-4. Verify no other feature is affected
-5. Add a comment explaining the fix if non-obvious
+4. **Run `./scripts/verify-and-run.sh`** before saying "c'est corrigé" (voir `.cursor/rules/verify-before-deliver.mdc`)
+5. Verify no other feature is affected
+6. Add a comment explaining the fix if non-obvious
